@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script>
+		function changeSeason() {
+			var seasonSelect = document.querySelector('input[name="radioBtn"]:checked').value;
+			$.ajax({
+				type: "GET",
+				url: 'https://api.themoviedb.org/3/tv/48891/season/' + seasonSelect + '?api_key=9aca6fd3dc39905583e19fd3402f6d8f&language=en-US',
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: successNew,
+				error: errorFunc
+			});
+		}
+		function successFunc(data, status) {
+			//			alert(data.url);
+
+						$("#vidURL").html(data.url);
+						$("#iframe").html("<iframe sandbox = \"allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation\" src=" + data.openload + " frameborder=\"0\" gesture=\"media\" allow=\"encrypted-media\" allowfullscreen></iframe>")
+						// $("#vid").attr("src", data.url);
+						// $("#vid").show();
+						// $("#vid").load();
+		}
+
+		function getEpi(e, season, episode) {
+			var x = document.getElementsByClassName("episodeButton");
+			for (var i = 0; i < x.length; i++) {
+			  x[i].style.background = "none";
+			}
+			e.style.backgroundColor = "#20242f";
+			var season = season;
+			var epi = episode;
+			$.ajax({
+				type: "POST",
+				url: '/season',
+				data: JSON.stringify({
+					season: season,
+					episode: epi
+				}),
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: successFunc,
+				error: errorFunc
+			});
+		}
+
+		function errorFunc() {
+			// alert('hi');  48891 2,18
+		}
+		function successNew(data, status) {
+			document.getElementById("episodes").innerHTML = "";
+			console.log(data);
+			for (var i = 0; i < data.episodes.length; i++) {
+				document.getElementById("episodes").innerHTML = document.getElementById("episodes").innerHTML + "<button class=\"episodeButton\" onclick=\"getEpi(this, " + data.season_number + ", " + i + ")\">" + data.episodes[i].name + "</button> <br>";
+			}
+		}
+		function hi() {
+			alert("bye")
+		}
+
+	</script>
+	<style>
+		@import url('https://fonts.googleapis.com/css?family=Montserrat:300,500,900');
+		iframe {
+			width: 85vw;
+			left: 15vw;
+			top: 12vh;
+			height: 80vh;
+			position: absolute;
+		}
+		#vidURL {
+			padding-top: 50px;
+			text-align: center;
+			font-weight: 500;
+		}
+		.episodeButton {
+			width: 15vw;
+			position: relative;
+			left: 0;
+			background: none;
+			border: none;
+			top: 0;
+			height: 50px;
+			font-family: Montserrat;
+			overflow-y: scroll;
+			color: #d4d4d4;
+			transition: background 0.2s;
+		}
+		#episodes {
+			top: 0;
+			left: 0;
+			height: 100vh;
+			width: 15vw;
+			position: absolute;
+			background: #262835;
+			overflow-y: scroll;
+		}
+		#vid {
+			width: 90vw;
+			left: 10vw;
+			position: fixed;
+			overflow: hidden;
+		}
+		body {
+			background: #fff;
+			font-family: Montserrat;
+			font-weight: 900;
+			font-size: 13px;
+			background-repeat: no-repeat;
+			background-attachment: fixed;
+			overflow: hidden;
+		}
+
+		input[type="radio"] {
+			display: none;
+		}
+		#radios {
+		  position: fixed;
+		  background-color:rgb(255, 255, 255);
+		  z-index:5;
+		  width: 606px;
+		  border-radius: 30px;
+		  /* border-width: 2px;
+		  border-color: #f96142;
+		  border-style: solid; */
+		  left: calc(50vw - 303px);
+		}
+		#bckgrnd,
+		.labels {
+		  width: 121px;
+		  height: 30px;
+		  text-align: center;
+		  display: inline-block;
+		  padding-top: 10px;
+		  margin-right: -3px;
+		  z-index: 2;
+		  cursor: pointer;
+		  color: #262e37;
+		}
+		#bckgrnd {
+			background: rgb(252,88,77);
+  background: -moz-linear-gradient(90deg, rgba(252,88,77,1) 0%, rgba(253,106,45,1) 100%);
+  background: -webkit-linear-gradient(90deg, rgba(252,88,77,1) 0%, rgba(253,106,45,1) 100%);
+  background: linear-gradient(90deg, rgba(252,88,77,1) 0%, rgba(253,106,45,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#fc584d",endColorstr="#fd6a2d",GradientType=1);
+		  position: absolute;
+		  left: 0;
+		  top: 0;
+		  z-index: -1;
+		  border-radius: 30px;
+		}
+		#rad1:checked ~ #bckgrnd {
+		  transform: translateX(0);
+		  transition: transform 0.5s ease-in-out;
+		}
+		#rad2:checked ~ #bckgrnd {
+		  transform: translateX(121px);
+		  transition: transform 0.5s ease-in-out;
+		}
+		#rad3:checked ~ #bckgrnd {
+		  transform: translateX(242px);
+		  transition: transform 0.5s ease-in-out;
+		}
+		#rad4:checked ~ #bckgrnd {
+		  transform: translateX(363px);
+		  transition: transform 0.5s ease-in-out;
+		}
+		#rad5:checked ~ #bckgrnd {
+		  transform: translateX(485px);
+		  transition: transform 0.5s ease-in-out;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="radios">
+		<input id="rad1" value="1" type="radio" onclick="changeSeason()" name="radioBtn" checked>
+		<label class="labels" for="rad1">Season 1</label>
+		<input id="rad2" value="2" type="radio" onclick="changeSeason()" name="radioBtn">
+		<label class="labels" for="rad2">Season 2</label>
+		<input id="rad3" value="3" type="radio" onclick="changeSeason()" name="radioBtn">
+		<label class="labels" for="rad3">Season 3</label>
+		<input id="rad4" value="4" type="radio" onclick="changeSeason()" name="radioBtn">
+		<label class="labels" for="rad4">Season 4</label>
+		<input id="rad5" value="5" type="radio" onclick="changeSeason()" name="radioBtn">
+		<label class="labels" for="rad5">Season 5</label>
+		<div id="bckgrnd"></div>
+	</div>
+	<div id="episodes">
+
+	</div>
+	<!--
+	<div class="container">
+		<div class="column first">
+			<div class="item">
+				<img src="https://image.tmdb.org/t/p/w454_and_h254_bestv2/zaqAlAdjZGBuFMsHsLUYjDlgm9r.jpg" />
+				<div class="overlay" onclick="hi()">
+					<p class="title">Title</p>
+				</div>
+			</div>
+			<div class="item">
+				<img src="https://image.tmdb.org/t/p/w454_and_h254_bestv2/zaqAlAdjZGBuFMsHsLUYjDlgm9r.jpg" />
+				<div class="overlay" onclick="hi()">
+					<p class="title">Title</p>
+				</div>
+			</div>
+			<div class="item">
+				<img src="https://image.tmdb.org/t/p/w454_and_h254_bestv2/zaqAlAdjZGBuFMsHsLUYjDlgm9r.jpg" />
+				<div class="overlay" onclick="hi()">
+					<p class="title">Title</p>
+				</div>
+			</div>
+		</div>
+		<div class="column second">
+			<div class="item">
+				<img src="https://image.tmdb.org/t/p/w454_and_h254_bestv2/zaqAlAdjZGBuFMsHsLUYjDlgm9r.jpg" />
+				<div class="overlay" onclick="hi()">
+					<p class="title">Title</p>
+				</div>
+			</div>
+			<div class="item">
+				<img src="https://image.tmdb.org/t/p/w454_and_h254_bestv2/zaqAlAdjZGBuFMsHsLUYjDlgm9r.jpg" />
+				<div class="overlay" onclick="hi()">
+					<p class="title">Title</p>
+				</div>
+			</div>
+			<div class="item">
+				<img src="https://image.tmdb.org/t/p/w454_and_h254_bestv2/zaqAlAdjZGBuFMsHsLUYjDlgm9r.jpg" />
+			</div>
+		</div>
+		<div class="column third">
+			<div class="item">
+				<img src="https://image.tmdb.org/t/p/w454_and_h254_bestv2/zaqAlAdjZGBuFMsHsLUYjDlgm9r.jpg" />
+			</div>
+			<div class="item">
+				<img src="https://image.tmdb.org/t/p/w454_and_h254_bestv2/zaqAlAdjZGBuFMsHsLUYjDlgm9r.jpg" />
+			</div>
+			<div class="item">
+				<img src="https://image.tmdb.org/t/p/w454_and_h254_bestv2/zaqAlAdjZGBuFMsHsLUYjDlgm9r.jpg" />
+			</div>
+		</div>
+	</div>
+-->
+	<div id="iframe">
+
+	</div>
+	<p id="vidURL" style="color: #c9c9c9"></p>
+</body>
+
+</html>
+<!--
+
+curl -d '{"MyKey":"My Value"}' -H "Content-Type: application/json" http://127.0.0.1:8000/
+{"MyKey":"My Value"}-->
